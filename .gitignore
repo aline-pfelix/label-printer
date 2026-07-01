@@ -1,0 +1,23 @@
+# Ambiente virtual
+venv/
+.venv/
+
+# Bytecode Python
+__pycache__/
+*.pyc
+
+# Artefatos de build (PyInstaller)
+build/
+dist/
+
+# Logs
+*.log
+
+# Dados sensíveis de laboratório (planilhas de entrada)
+input/
+
+# Configurações de IDE/SO
+.vscode/
+.idea/
+Thumbs.db
+.claude/
