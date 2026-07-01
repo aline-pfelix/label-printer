@@ -11,6 +11,10 @@ Aplicativo desktop (Tkinter) para gerar e imprimir mapas de etiquetas de cluster
 - Filtro por placa mínima.
 - Persistência dos dados carregados entre sessões (`%LOCALAPPDATA%\LabelPrinter`).
 
+## Download
+
+Para apenas usar o programa (sem mexer no código), baixe o instalador mais recente na aba [Releases](https://github.com/aline-pfelix/label-printer/releases/latest) e rode o `.exe` de instalação. As seções abaixo são voltadas para desenvolvimento a partir do código-fonte.
+
 ## Estrutura do projeto
 
 ```
@@ -28,7 +32,7 @@ Label_Printer/
 └── requirements.txt
 ```
 
-## Instalação
+## Instalação (a partir do código-fonte)
 
 Requer Python 3.8+ e Windows (usa `pywin32`/`Win32Raw` para a impressora).
 
@@ -59,7 +63,7 @@ pip install pyinstaller
 pyinstaller Label_Printer.spec
 ```
 
-O executável final fica em `dist/Label_Printer.exe`.
+O executável final fica em `dist/Label_Printer.exe`. O instalador publicado nas Releases é gerado separadamente a partir desse executável e enviado manualmente.
 
 ## Observações
 
