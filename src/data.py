@@ -2,10 +2,14 @@ import pandas as pd
 from pathlib import Path
 
 
+# ---------------------------------------------------------------------- #
+# PIPELINE DE CARREGAMENTO E MERGE DOS DADOS                             #
+# ---------------------------------------------------------------------- #
+
 def carregar_dados(pasta):
     pasta = Path(pasta)
 
-    # Leitura e Dataframe de dados
+    # ---- ETAPA 1: LEITURA DOS DEMFILES (XLSX) ---- #
     dfs = []
     for f in pasta.iterdir():
         if f.name.endswith(".xlsx"):
@@ -15,6 +19,7 @@ def carregar_dados(pasta):
     df_total_dem["Specimen-code"] = (df_total_dem["Specimen-code-prefix"] + df_total_dem["Specimen-code-number"])
     df_total_dem_resumo = df_total_dem[["Specimen-code", "Plate-ID", "Position"]].copy()
 
+    # ---- ETAPA 2: LEITURA DO CLUSTER LIST (-IDS) ---- #
     dfs_cluster = []
     for f in pasta.iterdir():
         if f.name.endswith("-ids"):
@@ -24,13 +29,15 @@ def carregar_dados(pasta):
     df_total_cluster.columns = ['clusterCode', 'especime']
     df_total_cluster['specimenCodeCluster'] = (df_total_cluster['especime'].str.split('_').str[1])
 
+    # ---- ETAPA 3: MERGE E LIMPEZA ---- #
     df_final = pd.merge(df_total_dem_resumo, df_total_cluster, left_on="Specimen-code", right_on="specimenCodeCluster", how="outer")
     df_final["Specimen-code"] = (df_final["Specimen-code"] + "_" + df_final["Position"])
     df_final = df_final.drop(columns=["especime", "specimenCodeCluster", "Position"])
-    df = df_final.dropna(subset=["clusterCode", 'Specimen-code'])
+    df = df_final.dropna(subset=["clusterCode", "Specimen-code"])
 
     df = df.sort_values(["clusterCode", "Plate-ID", "Specimen-code"])
 
+    # ---- ETAPA 4: DIAGNÓSTICO ---- #
     print(f"Total xlsx: {len(df_total_dem_resumo)}")
     print(f"Total -ids: {len(df_total_cluster)}")
     print(f"Total após merge: {len(df_final)}")

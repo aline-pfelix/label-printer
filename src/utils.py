@@ -2,6 +2,10 @@ import sys
 from pathlib import Path
 
 
+# ---------------------------------------------------------------------- #
+# UTILITÁRIOS DE CAMINHO (ASSETS)                                        #
+# ---------------------------------------------------------------------- #
+
 def resource_path(relative_path):
     """Caminho absoluto de um arquivo em assets/, tanto em modo de
     desenvolvimento quanto em um executável empacotado pelo PyInstaller."""

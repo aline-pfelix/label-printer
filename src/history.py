@@ -2,6 +2,10 @@ from pathlib import Path
 from datetime import datetime
 
 
+# ---------------------------------------------------------------------- #
+# GERENCIADOR DE HISTÓRICO E PRODUÇÃO                                    #
+# ---------------------------------------------------------------------- #
+
 class HistoryManager:
 
     def __init__(self, data_dir):
@@ -10,7 +14,7 @@ class HistoryManager:
         self.arquivo = self.data_dir / "history_print.txt"
         self.arquivo_producao = self.data_dir / "daily_production.txt"
 
-    # ── Histórico de impressão ────────────────────────────────────────────────
+    # ---- HISTÓRICO DE IMPRESSÃO ---- #
 
     def salvar(self, cluster):
         linha = f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - Cluster: {cluster}"
@@ -30,7 +34,7 @@ class HistoryManager:
             return None
         return linhas[-1].split(" - Cluster: ")[-1].strip()
 
-    # ── Produção diária ───────────────────────────────────────────────────────
+    # ---- PRODUÇÃO DIÁRIA ---- #
 
     def _ler_producao(self):
         """Lê o arquivo de produção e retorna dict {data: {...}}."""
@@ -99,7 +103,7 @@ class HistoryManager:
         v = dados[hoje]
         return v["clusters"], v["individuos"], v["reimpressoes"]
 
-    # ── Reset ─────────────────────────────────────────────────────────────────
+    # ---- RESET ---- #
 
     def resetar(self):
         if self.arquivo.exists():

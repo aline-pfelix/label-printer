@@ -13,6 +13,10 @@ from utils import resource_path
 from config import carregar_config, salvar_config
 
 
+# ---------------------------------------------------------------------- #
+# INTERFACE GRÁFICA (TKINTER)                                            #
+# ---------------------------------------------------------------------- #
+
 class App:
 
     def __init__(self, root):
@@ -20,9 +24,9 @@ class App:
         self.df = None
         self.clusters = []
         self.idx = 0
-        self.placa_minima = None  # ── filtro em memória
+        self.placa_minima = None  # filtro em memória
 
-        # ── Diretório de dados ────────────────────────────────────────────────
+        # ---- DIRETÓRIO DE DADOS ---- #
         app_data = Path(os.environ.get("LOCALAPPDATA", Path.home()))
         self.data_dir = app_data / "LabelPrinter"
         self.data_dir.mkdir(parents=True, exist_ok=True)
@@ -43,7 +47,7 @@ class App:
         root.iconbitmap(str(resource_path("assets/tag.ico")))
         self.build_ui()
 
-        # ── Tentar carregar dados do último uso ───────────────────────────────
+        # ---- CARREGAR DADOS DO ÚLTIMO USO ---- #
         try:
             self.df = pd.read_parquet(self.parquet_path)
             self.clusters = self._filtrar_clusters(self.df)  # ← usa filtro
@@ -76,7 +80,7 @@ class App:
         if self.df is not None and self.clusters:
             self.atualizar()
 
-    # ── Interface ─────────────────────────────────────────────────────────────
+    # ---- INTERFACE ---- #
 
     def build_ui(self):
         tk.Button(
@@ -129,7 +133,7 @@ class App:
             command=self.abrir_configuracoes
         ).pack(pady=5)
 
-        # ── Filtro de placa mínima ─────────────────────────────────────────
+        # ---- FILTRO DE PLACA MÍNIMA ---- #
         frame_filtro = tk.Frame(self.root)
         frame_filtro.pack(pady=5)
         tk.Label(frame_filtro, text="Placa mínima:").pack(side="left")
@@ -145,7 +149,7 @@ class App:
         self.status = tk.Label(self.root)
         self.status.pack()
 
-    # ── Atualizar ─────────────────────────────────────────────────────────────
+    # ---- ATUALIZAR ---- #
 
     def atualizar(self):
         if self.df is None or self.df.empty or not self.clusters:
@@ -161,7 +165,7 @@ class App:
             self.hist.insert(tk.END, h + "\n")
         self.hist.see(tk.END)
 
-    # ── Navegação ─────────────────────────────────────────────────────────────
+    # ---- NAVEGAÇÃO ---- #
 
     def proximo(self):
         if self.idx < len(self.clusters) - 1:
@@ -182,7 +186,7 @@ class App:
             self.status.config(text="Cluster não encontrado", fg="red")
             self.root.after(1000, lambda: self.status.config(text=""))
 
-    # ── Impressão ─────────────────────────────────────────────────────────────
+    # ---- IMPRESSÃO ---- #
 
     def imprimir(self):
         if not self.clusters:
@@ -213,7 +217,7 @@ class App:
                 f"Cluster {cluster} pode ter sido impresso, mas houve um erro:\n{str(erro_impressao)}"
             )
 
-    # ── Produção ──────────────────────────────────────────────────────────────
+    # ---- PRODUÇÃO ---- #
 
     def mostrar_producao(self):
         clusters, individuos, reimp = self.history.ler_producao_hoje()
@@ -224,7 +228,7 @@ class App:
             f"Reimpressões: {reimp}"
         )
 
-    # ── Configurações ─────────────────────────────────────────────────────────
+    # ---- CONFIGURAÇÕES ---- #
 
     def abrir_configuracoes(self):
         janela = tk.Toplevel(self.root)
@@ -264,7 +268,7 @@ class App:
         tk.Button(frame_botoes, text="Salvar", bg="green", fg="white", command=salvar).pack(side="left", padx=5)
         tk.Button(frame_botoes, text="Cancelar", command=janela.destroy).pack(side="left", padx=5)
 
-    # ── Reset ─────────────────────────────────────────────────────────────────
+    # ---- RESET ---- #
 
     def resetar_historico(self):
         if not messagebox.askyesno("Confirmação", "Deseja resetar?"):
@@ -291,7 +295,7 @@ class App:
         self.status.config(text="✔ Histórico e dados resetados", fg="green")
         self.atualizar()
 
-    # ── Carregar dados ────────────────────────────────────────────────────────
+    # ---- CARREGAR DADOS ---- #
 
     def carregar_dados_ui(self):
         self.status.config(text="⏳ Carregando dados…", fg="blue")
@@ -322,7 +326,7 @@ class App:
 
         self.df.to_parquet(self.parquet_path, index=False)
 
-    # ── Filtro de placa ───────────────────────────────────────────────────────
+    # ---- FILTRO DE PLACA ---- #
 
     def _placa_valida(self, placa, minima):
         """Retorna True se placa >= minima, comparando letra depois número."""

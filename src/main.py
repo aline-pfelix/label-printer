@@ -3,6 +3,10 @@ import tkinter as tk
 from ui import App
 
 
+# ---------------------------------------------------------------------- #
+# PONTO DE ENTRADA DA APLICAÇÃO                                          #
+# ---------------------------------------------------------------------- #
+
 def main():
     root = tk.Tk()
     root.title("Label printer - Biodossel")
