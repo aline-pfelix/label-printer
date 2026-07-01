@@ -10,6 +10,7 @@ from printing import print_maps
 from data import carregar_dados
 from history import HistoryManager
 from utils import resource_path
+from config import carregar_config
 
 
 class App:
@@ -35,6 +36,9 @@ class App:
         # HistoryManager é a única fonte do caminho dos arquivos de histórico
         self.history = HistoryManager(self.data_dir)
         self.historico_local = self.history.carregar_tudo()
+
+        # Configuração editável (nome da impressora, textos da etiqueta)
+        self.config = carregar_config(self.data_dir)
 
         root.iconbitmap(str(resource_path("assets/tag.ico")))
         self.build_ui()
@@ -185,7 +189,7 @@ class App:
         n_ind = len(self.df[self.df["clusterCode"] == cluster])
 
         try:
-            print_maps(self.df, cluster)
+            print_maps(self.df, cluster, self.config)
         except Exception as e:
             erro_impressao = e
 

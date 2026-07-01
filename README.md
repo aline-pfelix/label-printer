@@ -65,7 +65,22 @@ pyinstaller Label_Printer.spec
 
 O executável final fica em `dist/Label_Printer.exe`. O instalador publicado nas Releases é gerado separadamente a partir desse executável e enviado manualmente.
 
+## Configuração
+
+Na primeira execução, o programa cria `%LOCALAPPDATA%\LabelPrinter\config.json` com valores padrão. Edite esse arquivo (sem precisar mexer no código ou recompilar) para adaptar a etiqueta impressa a outra impressora/instituição:
+
+```json
+{
+  "printer_name": "Nome da impressora (Windows)",
+  "institution_name": "Instituto Nacional de Pesquisas da Amazônia",
+  "contact_email": "contato@example.com",
+  "sorting_label": "Sorting: EXEMPLO - Mês/Ano"
+}
+```
+
+- `printer_name` deve bater com o nome da impressora configurado no Windows.
+- As mudanças valem a partir da próxima impressão (não precisa reiniciar o programa).
+
 ## Observações
 
-- O nome da impressora (`Nome da impressora (Windows)`) está fixo em `src/printing.py` — ajuste conforme o nome configurado no Windows.
 - Erros de impressão são registrados em `%LOCALAPPDATA%\LabelPrinter\erro_impressora.log`.

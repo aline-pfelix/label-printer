@@ -10,9 +10,9 @@ from utils import resource_path
 _LOG_PATH = Path(os.environ.get("LOCALAPPDATA", Path.home())) / "LabelPrinter" / "erro_impressora.log"
 
 
-def print_maps(df, cluster):
+def print_maps(df, cluster, config):
     try:
-        impressora = Win32Raw("Nome da impressora (Windows)")
+        impressora = Win32Raw(config["printer_name"])
         p = impressora
         df_cluster = df[df["clusterCode"] == cluster]
         n_ind = len(df_cluster)
@@ -22,15 +22,15 @@ def print_maps(df, cluster):
         p.text("="*48 + "\n")
         p.image(str(resource_path("assets/logo_biodossel.jpg")))
         p.set(align='center', bold=False, width=1, height=1)
-        p.text("Instituto Nacional de Pesquisas da Amazônia\n")
+        p.text(f"{config['institution_name']}\n")
         p.set(align='center', bold=True, width=1, height=1)
         p.text("="*48 + "\n\n")
 
         # Info
         p.set(align='left', bold=False)
         p.text(f"DATA: {datetime.now().strftime('%d/%m/%Y')}\n\n")
-        p.text("Sorting: EXEMPLO - Mês/Ano\n")
-        p.text("Dúvidas contatar: contato@example.com\n")
+        p.text(f"{config['sorting_label']}\n")
+        p.text(f"Dúvidas contatar: {config['contact_email']}\n")
         p.text("-"*48 + "\n")
 
         # Classification
