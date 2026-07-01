@@ -53,6 +53,7 @@ python main.py
 2. Navegue entre os clusters com **Anterior**/**Posterior** ou pela busca.
 3. Clique em **Imprimir** para enviar o mapa do cluster atual para a impressora `Nome da impressora (Windows)`.
 4. Use **Produção do dia** para ver quantos clusters/indivíduos já foram processados hoje.
+5. Use **Configurações** para ajustar impressora/textos da etiqueta pela interface, sem editar arquivos.
 
 ## Gerando o executável
 
@@ -67,7 +68,11 @@ O executável final fica em `dist/Label_Printer.exe`. O instalador publicado nas
 
 ## Configuração
 
-Na primeira execução, o programa cria `%LOCALAPPDATA%\LabelPrinter\config.json` com valores padrão. Edite esse arquivo (sem precisar mexer no código ou recompilar) para adaptar a etiqueta impressa a outra impressora/instituição:
+Na primeira execução, o programa cria `%LOCALAPPDATA%\LabelPrinter\config.json` com valores padrão (nome da impressora, instituição, e-mail de contato, texto de sorting).
+
+A forma recomendada de editar é pelo botão **Configurações** dentro do próprio app — abre uma janela com um campo para cada valor, sem precisar mexer em arquivos. `printer_name` deve bater com o nome da impressora configurado no Windows. As mudanças salvas valem a partir da próxima impressão.
+
+Também é possível editar `config.json` diretamente com um editor de texto, se preferir:
 
 ```json
 {
@@ -77,9 +82,6 @@ Na primeira execução, o programa cria `%LOCALAPPDATA%\LabelPrinter\config.json
   "sorting_label": "Sorting: EXEMPLO - Mês/Ano"
 }
 ```
-
-- `printer_name` deve bater com o nome da impressora configurado no Windows.
-- As mudanças valem a partir da próxima impressão (não precisa reiniciar o programa).
 
 ## Observações
 

@@ -21,3 +21,9 @@ def carregar_config(data_dir):
     config = dict(DEFAULTS)
     config.update(dados)
     return config
+
+
+def salvar_config(data_dir, config):
+    """Grava config.json em data_dir."""
+    caminho = Path(data_dir) / "config.json"
+    caminho.write_text(json.dumps(config, indent=2, ensure_ascii=False), encoding="utf-8")

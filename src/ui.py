@@ -10,7 +10,7 @@ from printing import print_maps
 from data import carregar_dados
 from history import HistoryManager
 from utils import resource_path
-from config import carregar_config
+from config import carregar_config, salvar_config
 
 
 class App:
@@ -124,6 +124,11 @@ class App:
             command=self.mostrar_producao
         ).pack(pady=5)
 
+        tk.Button(
+            self.root, text="Configurações",
+            command=self.abrir_configuracoes
+        ).pack(pady=5)
+
         # ── Filtro de placa mínima ─────────────────────────────────────────
         frame_filtro = tk.Frame(self.root)
         frame_filtro.pack(pady=5)
@@ -218,6 +223,46 @@ class App:
             f"Indivíduos processados: {individuos}\n"
             f"Reimpressões: {reimp}"
         )
+
+    # ── Configurações ─────────────────────────────────────────────────────────
+
+    def abrir_configuracoes(self):
+        janela = tk.Toplevel(self.root)
+        janela.title("Configurações")
+        janela.resizable(False, False)
+        janela.grab_set()  # janela modal
+
+        campos = [
+            ("printer_name", "Nome da impressora:"),
+            ("institution_name", "Instituição (impressa na etiqueta):"),
+            ("contact_email", "E-mail de contato:"),
+            ("sorting_label", "Texto de sorting:"),
+        ]
+
+        entradas = {}
+        for i, (chave, rotulo) in enumerate(campos):
+            tk.Label(janela, text=rotulo).grid(row=i, column=0, sticky="w", padx=10, pady=5)
+            entry = tk.Entry(janela, width=45)
+            entry.insert(0, self.config.get(chave, ""))
+            entry.grid(row=i, column=1, padx=10, pady=5)
+            entradas[chave] = entry
+
+        def salvar():
+            novo_config = {chave: entrada.get().strip() for chave, entrada in entradas.items()}
+
+            if not novo_config["printer_name"]:
+                messagebox.showerror("Erro", "O nome da impressora não pode ficar vazio.", parent=janela)
+                return
+
+            self.config = novo_config
+            salvar_config(self.data_dir, self.config)
+            janela.destroy()
+            self.status.config(text="✔ Configurações salvas", fg="green")
+
+        frame_botoes = tk.Frame(janela)
+        frame_botoes.grid(row=len(campos), column=0, columnspan=2, pady=10)
+        tk.Button(frame_botoes, text="Salvar", bg="green", fg="white", command=salvar).pack(side="left", padx=5)
+        tk.Button(frame_botoes, text="Cancelar", command=janela.destroy).pack(side="left", padx=5)
 
     # ── Reset ─────────────────────────────────────────────────────────────────
 
