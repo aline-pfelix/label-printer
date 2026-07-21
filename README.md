@@ -125,3 +125,12 @@ Também é possível editar `config.json` diretamente com um editor de texto, se
 ## Observações
 
 - Erros de impressão são registrados em `%LOCALAPPDATA%\LabelPrinter\erro_impressora.log`.
+- A licença (MIT) e a autoria estão no arquivo [LICENSE](LICENSE).
+
+## Como citar
+
+Félix, A. P. (2026). *Label Printer* (Versão 1.4.0) [Software]. https://github.com/aline-pfelix/label-printer
+
+## Autora
+
+Aline Félix
