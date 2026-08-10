@@ -7,7 +7,7 @@ from tkinter import messagebox, simpledialog, filedialog
 from pathlib import Path
 
 from printing import print_maps
-from data import carregar_dados
+from data import carregar_dados, DadosInvalidosError
 from history import HistoryManager
 from utils import resource_path
 from config import carregar_config, salvar_config
@@ -83,11 +83,17 @@ class App:
     # ---- INTERFACE ---- #
 
     def build_ui(self):
+        frame_carregar = tk.Frame(self.root)
+        frame_carregar.pack(pady=10)
         tk.Button(
-            self.root, text="Carregar dados",
+            frame_carregar, text="Carregar dados",
             command=self.carregar_dados_ui,
             bg="blue", fg="white"
-        ).pack(pady=10)
+        ).pack(side="left")
+        tk.Button(
+            frame_carregar, text="❓ Quais arquivos usar?",
+            command=self.mostrar_ajuda_arquivos
+        ).pack(side="left", padx=5)
 
         self.label = tk.Label(self.root, font=("Arial", 16, "bold"))
         self.label.pack(pady=10)
@@ -297,6 +303,19 @@ class App:
 
     # ---- CARREGAR DADOS ---- #
 
+    def mostrar_ajuda_arquivos(self):
+        messagebox.showinfo(
+            "Quais arquivos usar",
+            "Selecione uma pasta que contenha:\n\n"
+            "1) Arquivo(s) de demultiplexação (.xlsx)\n"
+            "   Colunas obrigatórias: Specimen-code-prefix, Specimen-code-number,\n"
+            "   Plate-ID, Position\n\n"
+            "2) Arquivo(s) de cluster (nome terminado em \"-ids\")\n"
+            "   Separados por TABULAÇÃO, com exatamente 2 colunas:\n"
+            "   código do cluster e especime\n\n"
+            "Todos os arquivos devem estar juntos, na mesma pasta."
+        )
+
     def carregar_dados_ui(self):
         self.status.config(text="⏳ Carregando dados…", fg="blue")
         self.root.update_idletasks()
@@ -308,8 +327,17 @@ class App:
 
         try:
             df = carregar_dados(Path(pasta))
+        except DadosInvalidosError as e:
+            messagebox.showerror("Arquivos inválidos", str(e))
+            self.status.config(text="")
+            return
         except Exception as e:
-            messagebox.showerror("Erro", str(e))
+            messagebox.showerror(
+                "Erro inesperado",
+                f"Ocorreu um erro ao carregar os dados:\n{e}\n\n"
+                "Verifique se a pasta selecionada contém os arquivos corretos "
+                "(veja \"Quais arquivos usar?\")."
+            )
             self.status.config(text="")
             return
 

@@ -6,24 +6,69 @@ from pathlib import Path
 # PIPELINE DE CARREGAMENTO E MERGE DOS DADOS                             #
 # ---------------------------------------------------------------------- #
 
+class DadosInvalidosError(Exception):
+    """Erro amigável, com mensagem pronta para exibir ao usuário na UI."""
+
+
+COLUNAS_XLSX_OBRIGATORIAS = {"Specimen-code-prefix", "Specimen-code-number", "Plate-ID", "Position"}
+
+
 def carregar_dados(pasta):
     pasta = Path(pasta)
 
     # ---- ETAPA 1: LEITURA DOS DEMFILES (XLSX) ---- #
+    arquivos_xlsx = [f for f in pasta.iterdir() if f.name.endswith(".xlsx")]
+    if not arquivos_xlsx:
+        raise DadosInvalidosError(
+            f"Nenhum arquivo .xlsx encontrado em:\n{pasta}\n\n"
+            "A pasta selecionada deve conter os arquivos de demultiplexação (.xlsx) "
+            "e os arquivos de cluster (terminados em \"-ids\")."
+        )
+
     dfs = []
-    for f in pasta.iterdir():
-        if f.name.endswith(".xlsx"):
-            dfs.append(pd.read_excel(f, dtype=str))
+    for f in arquivos_xlsx:
+        df_xlsx = pd.read_excel(f, dtype=str)
+        faltando = COLUNAS_XLSX_OBRIGATORIAS - set(df_xlsx.columns)
+        if faltando:
+            raise DadosInvalidosError(
+                f"O arquivo \"{f.name}\" não tem as colunas esperadas: {', '.join(sorted(faltando))}.\n\n"
+                "Verifique se este é realmente um arquivo de demultiplexação (.xlsx) "
+                "e não outro tipo de planilha."
+            )
+        dfs.append(df_xlsx)
 
     df_total_dem = pd.concat(dfs, ignore_index=True)
     df_total_dem["Specimen-code"] = (df_total_dem["Specimen-code-prefix"] + df_total_dem["Specimen-code-number"])
     df_total_dem_resumo = df_total_dem[["Specimen-code", "Plate-ID", "Position"]].copy()
 
     # ---- ETAPA 2: LEITURA DO CLUSTER LIST (-IDS) ---- #
+    arquivos_ids = [f for f in pasta.iterdir() if f.name.endswith("-ids")]
+    if not arquivos_ids:
+        raise DadosInvalidosError(
+            f"Nenhum arquivo \"-ids\" encontrado em:\n{pasta}\n\n"
+            "A pasta selecionada deve conter os arquivos de cluster (terminados em \"-ids\"), "
+            "separados por tabulação, com 2 colunas: código do cluster e especime."
+        )
+
     dfs_cluster = []
-    for f in pasta.iterdir():
-        if f.name.endswith("-ids"):
-            dfs_cluster.append(pd.read_csv(f, sep="\t", dtype=str, engine="python"))
+    for f in arquivos_ids:
+        try:
+            df_ids = pd.read_csv(f, sep="\t", dtype=str, engine="python")
+        except Exception as e:
+            raise DadosInvalidosError(
+                f"Não foi possível ler o arquivo \"{f.name}\" como um arquivo -ids válido.\n\n"
+                "Ele parece estar corrompido, não separado por tabulação, ou não é o tipo de "
+                "arquivo esperado (verifique se não é um .xlsx renomeado ou um arquivo de outro formato).\n\n"
+                f"Detalhe técnico: {e}"
+            ) from e
+
+        if df_ids.shape[1] != 2:
+            raise DadosInvalidosError(
+                f"O arquivo \"{f.name}\" tem {df_ids.shape[1]} coluna(s) após a leitura, mas eram "
+                "esperadas exatamente 2 (código do cluster e especime), separadas por tabulação.\n\n"
+                "Verifique se este é o arquivo -ids correto."
+            )
+        dfs_cluster.append(df_ids)
 
     df_total_cluster = pd.concat(dfs_cluster, ignore_index=True)
     df_total_cluster.columns = ['clusterCode', 'especime']
