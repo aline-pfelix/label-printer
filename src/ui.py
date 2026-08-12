@@ -91,7 +91,7 @@ class App:
             bg="blue", fg="white"
         ).pack(side="left")
         tk.Button(
-            frame_carregar, text="❓ Quais arquivos usar?",
+            frame_carregar, text="Input esperado",
             command=self.mostrar_ajuda_arquivos
         ).pack(side="left", padx=5)
 
@@ -304,17 +304,51 @@ class App:
     # ---- CARREGAR DADOS ---- #
 
     def mostrar_ajuda_arquivos(self):
-        messagebox.showinfo(
-            "Quais arquivos usar",
-            "Selecione uma pasta que contenha:\n\n"
-            "1) Arquivo(s) de demultiplexação (.xlsx)\n"
-            "   Colunas obrigatórias: Specimen-code-prefix, Specimen-code-number,\n"
-            "   Plate-ID, Position\n\n"
-            "2) Arquivo(s) de cluster (nome terminado em \"-ids\")\n"
-            "   Separados por TABULAÇÃO, com exatamente 2 colunas:\n"
-            "   código do cluster e especime\n\n"
-            "Todos os arquivos devem estar juntos, na mesma pasta."
-        )
+        janela = tk.Toplevel(self.root)
+        janela.title("Input esperado")
+        janela.resizable(False, False)
+        janela.grab_set()  # janela modal
+
+        tk.Label(
+            janela, text="A pasta selecionada deve conter:",
+            font=("Arial", 10, "bold"), anchor="w"
+        ).grid(row=0, column=0, sticky="w", padx=15, pady=(15, 10))
+
+        secoes = [
+            (
+                "1. Demultiplexing (.xlsx) — um ou mais arquivos",
+                "Colunas obrigatórias:",
+                "Specimen-code-prefix, Specimen-code-number,\nPlate-ID, Position",
+            ),
+            (
+                "2. Cluster (arquivo terminado em \"-ids\") — apenas 1 arquivo",
+                "Formato:",
+                "Texto separado por TABULAÇÃO, 2 colunas:\ncódigo do cluster e espécime",
+            ),
+        ]
+
+        row = 1
+        for titulo, rotulo, valor in secoes:
+            tk.Label(
+                janela, text=titulo, font=("Arial", 9, "bold"), anchor="w"
+            ).grid(row=row, column=0, sticky="w", padx=15)
+            row += 1
+            tk.Label(janela, text=rotulo, anchor="w").grid(row=row, column=0, sticky="w", padx=30)
+            row += 1
+            tk.Label(
+                janela, text=valor, font=("Consolas", 9), justify="left", anchor="w"
+            ).grid(row=row, column=0, sticky="w", padx=30, pady=(0, 12))
+            row += 1
+
+        tk.Label(
+            janela, text="Todos os arquivos devem estar na mesma pasta.",
+            font=("Arial", 9, "italic"), anchor="w"
+        ).grid(row=row, column=0, sticky="w", padx=15, pady=(0, 15))
+        row += 1
+
+        tk.Button(
+            janela, text="Entendi", width=12, command=janela.destroy
+        ).grid(row=row, column=0, pady=(0, 15))
 
     def carregar_dados_ui(self):
         self.status.config(text="⏳ Carregando dados…", fg="blue")

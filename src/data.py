@@ -46,31 +46,38 @@ def carregar_dados(pasta):
     if not arquivos_ids:
         raise DadosInvalidosError(
             f"Nenhum arquivo \"-ids\" encontrado em:\n{pasta}\n\n"
-            "A pasta selecionada deve conter os arquivos de cluster (terminados em \"-ids\"), "
-            "separados por tabulação, com 2 colunas: código do cluster e especime."
+            "A pasta selecionada deve conter o arquivo de cluster (terminado em \"-ids\"), "
+            "separado por tabulação, com 2 colunas: código do cluster e especime."
         )
 
-    dfs_cluster = []
-    for f in arquivos_ids:
-        try:
-            df_ids = pd.read_csv(f, sep="\t", dtype=str, engine="python")
-        except Exception as e:
-            raise DadosInvalidosError(
-                f"Não foi possível ler o arquivo \"{f.name}\" como um arquivo -ids válido.\n\n"
-                "Ele parece estar corrompido, não separado por tabulação, ou não é o tipo de "
-                "arquivo esperado (verifique se não é um .xlsx renomeado ou um arquivo de outro formato).\n\n"
-                f"Detalhe técnico: {e}"
-            ) from e
+    if len(arquivos_ids) > 1:
+        nomes = "\n".join(f"- {f.name}" for f in arquivos_ids)
+        raise DadosInvalidosError(
+            f"Foram encontrados {len(arquivos_ids)} arquivos \"-ids\" em:\n{pasta}\n\n"
+            f"{nomes}\n\n"
+            "Apenas 1 arquivo de cluster é permitido por pasta. Remova os arquivos extras "
+            "e mantenha somente o correto."
+        )
 
-        if df_ids.shape[1] != 2:
-            raise DadosInvalidosError(
-                f"O arquivo \"{f.name}\" tem {df_ids.shape[1]} coluna(s) após a leitura, mas eram "
-                "esperadas exatamente 2 (código do cluster e especime), separadas por tabulação.\n\n"
-                "Verifique se este é o arquivo -ids correto."
-            )
-        dfs_cluster.append(df_ids)
+    f = arquivos_ids[0]
+    try:
+        df_ids = pd.read_csv(f, sep="\t", dtype=str, engine="python")
+    except Exception as e:
+        raise DadosInvalidosError(
+            f"Não foi possível ler o arquivo \"{f.name}\" como um arquivo -ids válido.\n\n"
+            "Ele parece estar corrompido, não separado por tabulação, ou não é o tipo de "
+            "arquivo esperado (verifique se não é um .xlsx renomeado ou um arquivo de outro formato).\n\n"
+            f"Detalhe técnico: {e}"
+        ) from e
 
-    df_total_cluster = pd.concat(dfs_cluster, ignore_index=True)
+    if df_ids.shape[1] != 2:
+        raise DadosInvalidosError(
+            f"O arquivo \"{f.name}\" tem {df_ids.shape[1]} coluna(s) após a leitura, mas eram "
+            "esperadas exatamente 2 (código do cluster e especime), separadas por tabulação.\n\n"
+            "Verifique se este é o arquivo -ids correto."
+        )
+
+    df_total_cluster = df_ids
     df_total_cluster.columns = ['clusterCode', 'especime']
     df_total_cluster['specimenCodeCluster'] = (df_total_cluster['especime'].str.split('_').str[1])
 
