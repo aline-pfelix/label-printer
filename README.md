@@ -129,7 +129,7 @@ Também é possível editar `config.json` diretamente com um editor de texto, se
 
 ## Como citar
 
-Félix, A. P. (2026). *Label Printer* (Versão 1.4.0) [Software]. https://github.com/aline-pfelix/label-printer
+Félix, A. P. (2026). *Label Printer* (Versão 1.5.0) [Software]. https://github.com/aline-pfelix/label-printer
 
 ## Autora
 
