@@ -1,6 +1,6 @@
 # Label Printer - Biodossel
 
-Aplicativo desktop (Tkinter) para gerar e imprimir mapas de etiquetas de clusters de espécimes, usado no fluxo de trabalho do projeto Biodossel/INPA. Lê planilhas `.xlsx` e arquivos `-ids`, faz o merge dos dados por cluster, e envia o mapa formatado para uma impressora térmica EPSON via ESC/POS.
+Aplicativo desktop para gerar e imprimir mapas de etiquetas de clusters de espécimes, usado no fluxo de trabalho do projeto Biodossel/INPA. Lê planilhas `.xlsx` e arquivos `-ids`, faz o merge dos dados por cluster, e envia o mapa formatado para uma impressora térmica EPSON via ESC/POS.
 
 ## Funcionalidades
 
