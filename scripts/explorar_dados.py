@@ -4,7 +4,7 @@
 import pandas as pd
 from pathlib import Path
 
-PASTA_DADOS = Path(r"caminho/para/dados")  # ← troca pelo caminho real
+PASTA_DADOS = Path("caminho/para/dados")  # ← troca pelo caminho real
 
 
 # ---------------------------------------------------------------------- #
